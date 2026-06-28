@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Course Master - CollegeOS')
+@section('title', 'Subject Master - CollegeOS')
 
 @section('content')
 <div class="container-fluid">
     <!-- Top Bar -->
     <div class="topbar">
         <div>
-            <h1>Course Master</h1>
-            <div class="topbar-sub">Manage all academic courses</div>
+            <h1>Subject Master</h1>
+            <div class="topbar-sub">Manage all academic subjects</div>
         </div>
-        <a href="{{ route('courses.create') }}" class="btn-amber">
-            <i class="ti ti-plus"></i> Add Course
+        <a href="{{ route('subjects.create') }}" class="btn-amber">
+            <i class="ti ti-plus"></i> Add Subject
         </a>
     </div>
 
@@ -25,32 +25,32 @@
     <!-- Stats Row -->
     <div class="stats-row">
         <div class="stat-card">
-            <div class="stat-label">📚 Total Courses</div>
-            <div class="stat-value">{{ $courses->count() }}</div>
-            <div class="stat-pill pill-amber"><i class="ti ti-book"></i> Active Courses</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">📊 Last Updated</div>
-            <div class="stat-value" style="font-size: 24px;">{{ now()->format('M d, Y') }}</div>
-            <div class="stat-pill pill-green"><i class="ti ti-calendar"></i> {{ now()->format('h:i A') }}</div>
+            <div class="stat-label">📚 Total Subjects</div>
+            <div class="stat-value">{{ $totalSubjects }}</div>
+            <div class="stat-pill pill-amber"><i class="ti ti-book"></i> All Subjects</div>
         </div>
         <div class="stat-card">
             <div class="stat-label">🏷️ Total Departments</div>
-            <div class="stat-value">{{ $courses->pluck('department_id')->unique()->count() }}</div>
-            <div class="stat-pill pill-blue"><i class="ti ti-building"></i> Departments</div>
+            <div class="stat-value">{{ $totalDepartments }}</div>
+            <div class="stat-pill pill-green"><i class="ti ti-building"></i> Departments</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📖 Total Courses</div>
+            <div class="stat-value">{{ $totalCourses }}</div>
+            <div class="stat-pill pill-blue"><i class="ti ti-book"></i> Courses</div>
         </div>
     </div>
 
-    <!-- Course Table -->
+    <!-- Subject Table -->
     <div class="table-container">
         <div class="table-header">
             <div class="table-title">
-                <i class="ti ti-list"></i> Course List
+                <i class="ti ti-list"></i> Subject List
             </div>
             <div class="table-actions">
                 <div class="search-wrap">
                     <i class="ti ti-search search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="Search courses..." onkeyup="searchTable()">
+                    <input type="text" id="searchInput" placeholder="Search subjects..." onkeyup="searchTable()">
                 </div>
             </div>
         </div>
@@ -59,42 +59,45 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>SI No</th>
-                        <th>Course Code</th>
-                        <th>Course Name</th>
-                        <th>Department</th>
-                        <th>Actions</th>
+                        <th style="width: 5%; text-align: center;">SI NO</th>
+                        <th style="width: 18%;">Subject Code</th>
+                        <th style="width: 27%;">Subject Name</th>
+                        <th style="width: 20%;">Department</th>
+                        <th style="width: 20%;">Course</th>
+                        <th style="width: 10%; text-align: center;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($courses as $index => $course)
+                    @forelse($subjects as $index => $subject)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td style="text-align: center;">{{ $subjects->firstItem() + $index }}</td>
                             <td>
-                                <span class="course-code">{{ $course->course_code }}</span>
+                                <span class="subject-code">{{ $subject->subject_code }}</span>
                             </td>
                             <td>
-                                <span class="course-name">{{ $course->course_name }}</span>
+                                <span class="subject-name">{{ $subject->subject_name }}</span>
                             </td>
                             <td>
-                                <span class="department-badge">
-                                    {{ $course->department->department_name ?? 'N/A' }}
-                                </span>
+                                <span class="department-badge">{{ $subject->department->department_name ?? 'N/A' }}</span>
+                            </td>
+                            <td>
+                                <span class="course-badge">{{ $subject->course->course_name ?? 'N/A' }}</span>
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="{{ route('courses.edit', $course->id) }}" class="btn-edit">
-                                        <i class="ti ti-edit"></i> Edit
+                                    <a href="{{ route('subjects.edit', $subject->id) }}" class="btn-edit" title="Edit Subject">
+                                        <i class="ti ti-edit"></i>
                                     </a>
-                                    <form action="{{ route('courses.destroy', $course->id) }}"
+                                    <form action="{{ route('subjects.destroy', $subject->id) }}"
                                           method="POST"
                                           style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
                                                 class="btn-delete"
-                                                onclick="return confirm('Are you sure you want to delete this course?')">
-                                            <i class="ti ti-trash"></i> Delete
+                                                onclick="return confirm('Are you sure you want to delete this subject?')"
+                                                title="Delete Subject">
+                                            <i class="ti ti-trash"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -102,13 +105,13 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 <div class="empty-state">
                                     <i class="ti ti-book"></i>
-                                    <div class="empty-title">No Courses Found</div>
-                                    <div class="empty-sub">Click "Add Course" to create your first course</div>
-                                    <a href="{{ route('courses.create') }}" class="btn-amber" style="margin-top: 15px; display: inline-flex;">
-                                        <i class="ti ti-plus"></i> Add Your First Course
+                                    <div class="empty-title">No Subjects Found</div>
+                                    <div class="empty-sub">Click "Add Subject" to create your first subject</div>
+                                    <a href="{{ route('subjects.create') }}" class="btn-amber" style="margin-top: 15px; display: inline-flex;">
+                                        <i class="ti ti-plus"></i> Add Your First Subject
                                     </a>
                                 </div>
                             </td>
@@ -118,10 +121,10 @@
             </table>
         </div>
 
-        <!-- Pagination (if you have pagination) -->
-        @if(method_exists($courses, 'links'))
+        <!-- Pagination -->
+        @if($subjects->hasPages())
             <div class="pagination-wrapper">
-                {{ $courses->links() }}
+                {{ $subjects->links() }}
             </div>
         @endif
     </div>
@@ -294,29 +297,7 @@
         pointer-events: none;
     }
 
-    .btn-ghost {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 7px 14px;
-        background: transparent;
-        border: 1px solid var(--border2, #ccc5b8);
-        border-radius: 8px;
-        color: var(--ink2, #2d2d4e);
-        font-size: 12px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all .15s;
-        text-decoration: none;
-    }
-
-    .btn-ghost:hover {
-        background: var(--surface2, #efecea);
-        color: var(--ink, #1a1a2e);
-        text-decoration: none;
-    }
-
-    /* Table - Equal spacing between all columns */
+    /* Table */
     .table-responsive {
         overflow-x: auto;
         padding: 0;
@@ -335,50 +316,21 @@
 
     .data-table th {
         color: #fff;
-        padding: 12px 16px;
+        padding: 12px 14px;
         text-align: left;
         font-weight: 600;
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: .5px;
-    }
-
-    /* Equal column widths */
-    .data-table th:nth-child(1),
-    .data-table td:nth-child(1) {
-        width: 8%;
-        text-align: center;
-    }
-
-    .data-table th:nth-child(2),
-    .data-table td:nth-child(2) {
-        width: 18%;
-    }
-
-    .data-table th:nth-child(3),
-    .data-table td:nth-child(3) {
-        width: 32%;
-    }
-
-    .data-table th:nth-child(4),
-    .data-table td:nth-child(4) {
-        width: 22%;
-    }
-
-    .data-table th:nth-child(5),
-    .data-table td:nth-child(5) {
-        width: 20%;
+        white-space: nowrap;
     }
 
     .data-table td {
-        padding: 12px 16px;
+        padding: 12px 14px;
         border-bottom: 1px solid var(--border, #ddd8d0);
         color: var(--ink2, #2d2d4e);
         vertical-align: middle;
-    }
-
-    .data-table td:nth-child(1) {
-        text-align: center;
+        word-wrap: break-word;
     }
 
     .data-table tbody tr:hover {
@@ -389,61 +341,72 @@
         border-bottom: none;
     }
 
-    /* Course Code */
-    .course-code {
+    /* Subject Code */
+    .subject-code {
         font-weight: 700;
         color: var(--ink, #1a1a2e);
         background: var(--amber-light, #fdf3df);
-        padding: 4px 12px;
+        padding: 3px 8px;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 11px;
         display: inline-block;
         white-space: nowrap;
     }
 
-    .course-name {
+    .subject-name {
         font-weight: 500;
         color: var(--ink, #1a1a2e);
-        display: block;
-        word-wrap: break-word;
         font-size: 13px;
     }
 
     /* Department Badge */
     .department-badge {
-        background: var(--blue-bg, #eff6ff);
-        color: var(--blue, #2563eb);
-        padding: 4px 14px;
-        border-radius: 20px;
-        font-size: 12px;
+        background: var(--green-bg, #eaf5ef);
+        color: var(--green, #1a7a4a);
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
         display: inline-block;
         font-weight: 500;
         white-space: nowrap;
     }
 
-    /* Action Buttons */
+    /* Course Badge */
+    .course-badge {
+        background: var(--blue-bg, #eff6ff);
+        color: var(--blue, #2563eb);
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        display: inline-block;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    /* Action Buttons - Icon Only */
     .action-buttons {
         display: flex;
         gap: 6px;
         flex-wrap: wrap;
         align-items: center;
+        justify-content: center;
     }
 
     .btn-edit {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 5px 12px;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
         background: var(--amber-light, #fdf3df);
         color: #7a5200;
         border: 1px solid #f5d990;
         border-radius: 6px;
-        font-size: 11px;
-        font-weight: 500;
+        font-size: 14px;
         cursor: pointer;
         transition: all .15s;
         text-decoration: none;
-        white-space: nowrap;
     }
 
     .btn-edit:hover {
@@ -455,17 +418,18 @@
     .btn-delete {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 5px 12px;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
         background: var(--red-bg, #fdecea);
         color: var(--red, #c0392b);
         border: 1px solid #f5c6c2;
         border-radius: 6px;
-        font-size: 11px;
-        font-weight: 500;
+        font-size: 14px;
         cursor: pointer;
         transition: all .15s;
-        white-space: nowrap;
+        border: none;
     }
 
     .btn-delete:hover {
@@ -503,6 +467,11 @@
         padding: 14px 20px;
         border-top: 1px solid var(--border, #ddd8d0);
         background: var(--surface, #f7f5f2);
+    }
+
+    .pagination-wrapper .pagination {
+        margin: 0;
+        justify-content: center;
     }
 
     /* Top Bar */
@@ -556,27 +525,6 @@
         .stats-row {
             grid-template-columns: repeat(2, 1fr);
         }
-
-        .data-table th:nth-child(1),
-        .data-table td:nth-child(1) {
-            width: 10%;
-        }
-        .data-table th:nth-child(2),
-        .data-table td:nth-child(2) {
-            width: 20%;
-        }
-        .data-table th:nth-child(3),
-        .data-table td:nth-child(3) {
-            width: 30%;
-        }
-        .data-table th:nth-child(4),
-        .data-table td:nth-child(4) {
-            width: 20%;
-        }
-        .data-table th:nth-child(5),
-        .data-table td:nth-child(5) {
-            width: 20%;
-        }
     }
 
     @media (max-width: 768px) {
@@ -599,13 +547,15 @@
         }
 
         .action-buttons {
-            flex-direction: column;
-            align-items: stretch;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn-edit,
         .btn-delete {
-            justify-content: center;
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
         }
 
         .data-table th,
@@ -614,18 +564,15 @@
             font-size: 12px;
         }
 
-        /* Remove fixed widths on mobile */
-        .data-table th:nth-child(1),
-        .data-table td:nth-child(1),
-        .data-table th:nth-child(2),
-        .data-table td:nth-child(2),
-        .data-table th:nth-child(3),
-        .data-table td:nth-child(3),
-        .data-table th:nth-child(4),
-        .data-table td:nth-child(4),
-        .data-table th:nth-child(5),
-        .data-table td:nth-child(5) {
-            width: auto;
+        .subject-code {
+            font-size: 10px;
+            padding: 2px 6px;
+        }
+
+        .department-badge,
+        .course-badge {
+            font-size: 10px;
+            padding: 2px 8px;
         }
     }
 
@@ -642,26 +589,6 @@
         .data-table th,
         .data-table td {
             padding: 6px 8px;
-        }
-
-        .course-code {
-            font-size: 10px;
-            padding: 2px 8px;
-        }
-
-        .department-badge {
-            font-size: 10px;
-            padding: 2px 10px;
-        }
-
-        .btn-edit,
-        .btn-delete {
-            font-size: 10px;
-            padding: 4px 8px;
-        }
-
-        .stats-row {
-            grid-template-columns: 1fr;
         }
     }
 </style>

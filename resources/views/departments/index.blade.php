@@ -34,11 +34,6 @@
             <div class="stat-value" style="font-size: 24px;">{{ now()->format('M d, Y') }}</div>
             <div class="stat-pill pill-green"><i class="ti ti-calendar"></i> {{ now()->format('h:i A') }}</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-label">📚 Total Courses</div>
-            <div class="stat-value">{{ $departments->sum(function($dept) { return $dept->courses_count ?? 0; }) }}</div>
-            <div class="stat-pill pill-blue"><i class="ti ti-book"></i> Across all departments</div>
-        </div>
     </div>
 
     <!-- Department Table -->
@@ -52,9 +47,6 @@
                     <i class="ti ti-search search-icon"></i>
                     <input type="text" id="searchInput" placeholder="Search departments..." onkeyup="searchTable()">
                 </div>
-                <button class="btn-ghost" onclick="window.print()">
-                    <i class="ti ti-printer"></i> Print
-                </button>
             </div>
         </div>
 
@@ -62,7 +54,7 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th width="10%">#</th>
+                        <th width="10%">SI NO</th>
                         <th width="60%">Department Name</th>
                         <th width="30%">Actions</th>
                     </tr>
@@ -148,10 +140,10 @@
         }
     }
 
-    /* Stats Row */
+    /* Stats Row - Full width 2 columns */
     .stats-row {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr 1fr;
         gap: 16px;
         margin-bottom: 28px;
     }
@@ -178,7 +170,6 @@
 
     .stat-card:nth-child(1)::after { background: var(--amber, #c8850a); }
     .stat-card:nth-child(2)::after { background: var(--green, #1a7a4a); }
-    .stat-card:nth-child(3)::after { background: var(--blue, #2563eb); }
 
     .stat-label {
         font-size: 11px;
@@ -214,10 +205,6 @@
         background: var(--green-bg, #eaf5ef);
         color: var(--green, #1a7a4a);
     }
-    .pill-blue {
-        background: var(--blue-bg, #eff6ff);
-        color: var(--blue, #2563eb);
-    }
 
     /* Table Container */
     .table-container {
@@ -232,15 +219,15 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 18px 24px;
+        padding: 14px 20px;
         border-bottom: 1px solid var(--border, #ddd8d0);
         background: var(--surface, #f7f5f2);
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 10px;
     }
 
     .table-title {
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 700;
         color: var(--ink, #1a1a2e);
         display: flex;
@@ -251,18 +238,18 @@
     .table-actions {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         flex-wrap: wrap;
     }
 
     .search-wrap {
         position: relative;
-        min-width: 200px;
+        min-width: 180px;
     }
 
     .search-wrap input {
         width: 100%;
-        padding: 8px 14px 8px 36px;
+        padding: 7px 12px 7px 34px;
         border: 1px solid var(--border2, #ccc5b8);
         border-radius: var(--radius, 10px);
         font-size: 13px;
@@ -279,34 +266,12 @@
 
     .search-icon {
         position: absolute;
-        left: 12px;
+        left: 10px;
         top: 50%;
         transform: translateY(-50%);
         color: var(--ink3, #555570);
         font-size: 14px;
         pointer-events: none;
-    }
-
-    .btn-ghost {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 16px;
-        background: transparent;
-        border: 1px solid var(--border2, #ccc5b8);
-        border-radius: 8px;
-        color: var(--ink2, #2d2d4e);
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all .15s;
-        text-decoration: none;
-    }
-
-    .btn-ghost:hover {
-        background: var(--surface2, #efecea);
-        color: var(--ink, #1a1a2e);
-        text-decoration: none;
     }
 
     /* Table */
@@ -319,6 +284,7 @@
         width: 100%;
         border-collapse: collapse;
         font-size: 13px;
+        table-layout: fixed;
     }
 
     .data-table thead {
@@ -327,16 +293,16 @@
 
     .data-table th {
         color: #fff;
-        padding: 14px 20px;
+        padding: 12px 16px;
         text-align: left;
         font-weight: 600;
-        font-size: 12px;
+        font-size: 11px;
         text-transform: uppercase;
         letter-spacing: .5px;
     }
 
     .data-table td {
-        padding: 14px 20px;
+        padding: 12px 16px;
         border-bottom: 1px solid var(--border, #ddd8d0);
         color: var(--ink2, #2d2d4e);
         vertical-align: middle;
@@ -360,7 +326,7 @@
     /* Action Buttons */
     .action-buttons {
         display: flex;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
         align-items: center;
     }
@@ -368,17 +334,18 @@
     .btn-edit {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 6px 14px;
+        gap: 4px;
+        padding: 5px 12px;
         background: var(--amber-light, #fdf3df);
         color: #7a5200;
         border: 1px solid #f5d990;
-        border-radius: 7px;
-        font-size: 12px;
+        border-radius: 6px;
+        font-size: 11px;
         font-weight: 500;
         cursor: pointer;
         transition: all .15s;
         text-decoration: none;
+        white-space: nowrap;
     }
 
     .btn-edit:hover {
@@ -390,16 +357,17 @@
     .btn-delete {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 6px 14px;
+        gap: 4px;
+        padding: 5px 12px;
         background: var(--red-bg, #fdecea);
         color: var(--red, #c0392b);
         border: 1px solid #f5c6c2;
-        border-radius: 7px;
-        font-size: 12px;
+        border-radius: 6px;
+        font-size: 11px;
         font-weight: 500;
         cursor: pointer;
         transition: all .15s;
+        white-space: nowrap;
     }
 
     .btn-delete:hover {
@@ -434,7 +402,7 @@
 
     /* Pagination */
     .pagination-wrapper {
-        padding: 16px 24px;
+        padding: 14px 20px;
         border-top: 1px solid var(--border, #ddd8d0);
         background: var(--surface, #f7f5f2);
     }
@@ -444,7 +412,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
         flex-wrap: wrap;
         gap: 12px;
     }
@@ -466,12 +434,12 @@
         display: inline-flex;
         align-items: center;
         gap: 7px;
-        padding: 10px 22px;
+        padding: 9px 20px;
         background: var(--amber, #c8850a);
         color: var(--ink, #1a1a2e);
         border: none;
         border-radius: 8px;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
         cursor: pointer;
         transition: all .15s;
@@ -488,7 +456,7 @@
     /* Responsive */
     @media (max-width: 900px) {
         .stats-row {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
         }
     }
 
@@ -520,6 +488,12 @@
         .btn-delete {
             justify-content: center;
         }
+
+        .data-table th,
+        .data-table td {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
     }
 
     @media (max-width: 640px) {
@@ -529,12 +503,22 @@
         }
 
         .data-table {
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .data-table th,
         .data-table td {
-            padding: 10px 12px;
+            padding: 6px 10px;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
+
+        .stats-row {
+            grid-template-columns: 1fr;
         }
     }
 </style>

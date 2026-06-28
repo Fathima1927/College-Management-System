@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Course Master - CollegeOS')
+@section('title', 'Employee Master - CollegeOS')
 
 @section('content')
 <div class="container-fluid">
     <!-- Top Bar -->
     <div class="topbar">
         <div>
-            <h1>Course Master</h1>
-            <div class="topbar-sub">Manage all academic courses</div>
+            <h1>Employee Master</h1>
+            <div class="topbar-sub">Manage all employees</div>
         </div>
-        <a href="{{ route('courses.create') }}" class="btn-amber">
-            <i class="ti ti-plus"></i> Add Course
+        <a href="{{ route('employees.create') }}" class="btn-amber">
+            <i class="ti ti-plus"></i> Add Employee
         </a>
     </div>
 
@@ -25,32 +25,37 @@
     <!-- Stats Row -->
     <div class="stats-row">
         <div class="stat-card">
-            <div class="stat-label">📚 Total Courses</div>
-            <div class="stat-value">{{ $courses->count() }}</div>
-            <div class="stat-pill pill-amber"><i class="ti ti-book"></i> Active Courses</div>
+            <div class="stat-label">👥 Total Employees</div>
+            <div class="stat-value">{{ $totalEmployees }}</div>
+            <div class="stat-pill pill-amber"><i class="ti ti-users"></i> All Employees</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">📊 Last Updated</div>
-            <div class="stat-value" style="font-size: 24px;">{{ now()->format('M d, Y') }}</div>
-            <div class="stat-pill pill-green"><i class="ti ti-calendar"></i> {{ now()->format('h:i A') }}</div>
+            <div class="stat-label">👨‍🏫 Faculty</div>
+            <div class="stat-value">{{ $totalFaculty }}</div>
+            <div class="stat-pill pill-green"><i class="ti ti-user-check"></i> Teaching Staff</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">🏷️ Total Departments</div>
-            <div class="stat-value">{{ $courses->pluck('department_id')->unique()->count() }}</div>
-            <div class="stat-pill pill-blue"><i class="ti ti-building"></i> Departments</div>
+            <div class="stat-label">👔 Staff</div>
+            <div class="stat-value">{{ $totalStaff }}</div>
+            <div class="stat-pill pill-blue"><i class="ti ti-user"></i> Support Staff</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📋 Non-Teaching Staff</div>
+            <div class="stat-value">{{ $totalNonTeaching }}</div>
+            <div class="stat-pill pill-purple"><i class="ti ti-user-minus"></i> Non-Teaching</div>
         </div>
     </div>
 
-    <!-- Course Table -->
+    <!-- Employee Table -->
     <div class="table-container">
         <div class="table-header">
             <div class="table-title">
-                <i class="ti ti-list"></i> Course List
+                <i class="ti ti-list"></i> Employee List
             </div>
             <div class="table-actions">
                 <div class="search-wrap">
                     <i class="ti ti-search search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="Search courses..." onkeyup="searchTable()">
+                    <input type="text" id="searchInput" placeholder="Search employees..." onkeyup="searchTable()">
                 </div>
             </div>
         </div>
@@ -59,42 +64,56 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>SI No</th>
-                        <th>Course Code</th>
-                        <th>Course Name</th>
-                        <th>Department</th>
-                        <th>Actions</th>
+                        <th style="width: 5%; text-align: center;">SI NO</th>
+                        <th style="width: 8%; text-align: center;">Photo</th>
+                        <th style="width: 14%;">Employee Code</th>
+                        <th style="width: 16%;">Employee Name</th>
+                        <th style="width: 12%;">Designation</th>
+                        <th style="width: 12%;">Category</th>
+                        <th style="width: 10%;">PF No</th>
+                        <th style="width: 10%;">ESI No</th>
+                        <th style="width: 13%; text-align: center;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($courses as $index => $course)
+                    @forelse($employees as $index => $employee)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>
-                                <span class="course-code">{{ $course->course_code }}</span>
+                            <td style="text-align: center;">{{ $employees->firstItem() + $index }}</td>
+                            <td style="text-align: center;">
+                                <img src="{{ $employee->photo_url }}" alt="{{ $employee->employee_name }}" class="employee-photo">
                             </td>
                             <td>
-                                <span class="course-name">{{ $course->course_name }}</span>
+                                <span class="employee-code">{{ $employee->employee_code }}</span>
                             </td>
                             <td>
-                                <span class="department-badge">
-                                    {{ $course->department->department_name ?? 'N/A' }}
+                                <span class="employee-name">{{ $employee->employee_name }}</span>
+                            </td>
+                            <td>{{ $employee->designation }}</td>
+                            <td>
+                                <span class="category-badge {{ strtolower(str_replace(' ', '-', $employee->category)) }}">
+                                    {{ $employee->category }}
                                 </span>
                             </td>
+                            <td>{{ $employee->pf_no ?? '-' }}</td>
+                            <td>{{ $employee->esi_no ?? '-' }}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="{{ route('courses.edit', $course->id) }}" class="btn-edit">
-                                        <i class="ti ti-edit"></i> Edit
+                                    <a href="{{ route('employees.print', $employee->id) }}" target="_blank" class="btn-print" title="Print Employee Details">
+                                        <i class="ti ti-printer"></i>
                                     </a>
-                                    <form action="{{ route('courses.destroy', $course->id) }}"
+                                    <a href="{{ route('employees.edit', $employee->id) }}" class="btn-edit" title="Edit Employee">
+                                        <i class="ti ti-edit"></i>
+                                    </a>
+                                    <form action="{{ route('employees.destroy', $employee->id) }}"
                                           method="POST"
                                           style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
                                                 class="btn-delete"
-                                                onclick="return confirm('Are you sure you want to delete this course?')">
-                                            <i class="ti ti-trash"></i> Delete
+                                                onclick="return confirm('Are you sure you want to delete this employee?')"
+                                                title="Delete Employee">
+                                            <i class="ti ti-trash"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -102,13 +121,13 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5">
+                            <td colspan="9">
                                 <div class="empty-state">
-                                    <i class="ti ti-book"></i>
-                                    <div class="empty-title">No Courses Found</div>
-                                    <div class="empty-sub">Click "Add Course" to create your first course</div>
-                                    <a href="{{ route('courses.create') }}" class="btn-amber" style="margin-top: 15px; display: inline-flex;">
-                                        <i class="ti ti-plus"></i> Add Your First Course
+                                    <i class="ti ti-users"></i>
+                                    <div class="empty-title">No Employees Found</div>
+                                    <div class="empty-sub">Click "Add Employee" to create your first employee record</div>
+                                    <a href="{{ route('employees.create') }}" class="btn-amber" style="margin-top: 15px; display: inline-flex;">
+                                        <i class="ti ti-plus"></i> Add Your First Employee
                                     </a>
                                 </div>
                             </td>
@@ -118,10 +137,10 @@
             </table>
         </div>
 
-        <!-- Pagination (if you have pagination) -->
-        @if(method_exists($courses, 'links'))
+        <!-- Pagination -->
+        @if($employees->hasPages())
             <div class="pagination-wrapper">
-                {{ $courses->links() }}
+                {{ $employees->links() }}
             </div>
         @endif
     </div>
@@ -158,7 +177,7 @@
     /* Stats Row */
     .stats-row {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 16px;
         margin-bottom: 28px;
     }
@@ -186,6 +205,7 @@
     .stat-card:nth-child(1)::after { background: var(--amber, #c8850a); }
     .stat-card:nth-child(2)::after { background: var(--green, #1a7a4a); }
     .stat-card:nth-child(3)::after { background: var(--blue, #2563eb); }
+    .stat-card:nth-child(4)::after { background: var(--purple, #7c3aed); }
 
     .stat-label {
         font-size: 11px;
@@ -224,6 +244,10 @@
     .pill-blue {
         background: var(--blue-bg, #eff6ff);
         color: var(--blue, #2563eb);
+    }
+    .pill-purple {
+        background: var(--purple-bg, #f3e8ff);
+        color: var(--purple, #7c3aed);
     }
 
     /* Table Container */
@@ -294,29 +318,7 @@
         pointer-events: none;
     }
 
-    .btn-ghost {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 7px 14px;
-        background: transparent;
-        border: 1px solid var(--border2, #ccc5b8);
-        border-radius: 8px;
-        color: var(--ink2, #2d2d4e);
-        font-size: 12px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all .15s;
-        text-decoration: none;
-    }
-
-    .btn-ghost:hover {
-        background: var(--surface2, #efecea);
-        color: var(--ink, #1a1a2e);
-        text-decoration: none;
-    }
-
-    /* Table - Equal spacing between all columns */
+    /* Table */
     .table-responsive {
         overflow-x: auto;
         padding: 0;
@@ -335,50 +337,21 @@
 
     .data-table th {
         color: #fff;
-        padding: 12px 16px;
+        padding: 12px 14px;
         text-align: left;
         font-weight: 600;
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: .5px;
-    }
-
-    /* Equal column widths */
-    .data-table th:nth-child(1),
-    .data-table td:nth-child(1) {
-        width: 8%;
-        text-align: center;
-    }
-
-    .data-table th:nth-child(2),
-    .data-table td:nth-child(2) {
-        width: 18%;
-    }
-
-    .data-table th:nth-child(3),
-    .data-table td:nth-child(3) {
-        width: 32%;
-    }
-
-    .data-table th:nth-child(4),
-    .data-table td:nth-child(4) {
-        width: 22%;
-    }
-
-    .data-table th:nth-child(5),
-    .data-table td:nth-child(5) {
-        width: 20%;
+        white-space: nowrap;
     }
 
     .data-table td {
-        padding: 12px 16px;
+        padding: 12px 14px;
         border-bottom: 1px solid var(--border, #ddd8d0);
         color: var(--ink2, #2d2d4e);
         vertical-align: middle;
-    }
-
-    .data-table td:nth-child(1) {
-        text-align: center;
+        word-wrap: break-word;
     }
 
     .data-table tbody tr:hover {
@@ -389,51 +362,73 @@
         border-bottom: none;
     }
 
-    /* Course Code */
-    .course-code {
+    /* Employee Photo */
+    .employee-photo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--border, #ddd8d0);
+    }
+
+    /* Employee Code */
+    .employee-code {
         font-weight: 700;
         color: var(--ink, #1a1a2e);
         background: var(--amber-light, #fdf3df);
-        padding: 4px 12px;
+        padding: 3px 8px;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 11px;
         display: inline-block;
         white-space: nowrap;
     }
 
-    .course-name {
+    .employee-name {
         font-weight: 500;
         color: var(--ink, #1a1a2e);
-        display: block;
-        word-wrap: break-word;
         font-size: 13px;
     }
 
-    /* Department Badge */
-    .department-badge {
+    /* Category Badge */
+    .category-badge {
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .category-badge.faculty {
+        background: var(--green-bg, #eaf5ef);
+        color: var(--green, #1a7a4a);
+    }
+
+    .category-badge.staff {
         background: var(--blue-bg, #eff6ff);
         color: var(--blue, #2563eb);
-        padding: 4px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        display: inline-block;
-        font-weight: 500;
-        white-space: nowrap;
+    }
+
+    .category-badge.non-teaching-staff {
+        background: var(--purple-bg, #f3e8ff);
+        color: var(--purple, #7c3aed);
     }
 
     /* Action Buttons */
     .action-buttons {
         display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
+        gap: 5px;
+        flex-wrap: nowrap;
         align-items: center;
+        justify-content: center;
     }
 
-    .btn-edit {
+    .btn-print {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 5px 12px;
+        justify-content: center;
+        gap: 3px;
+        padding: 5px 10px;
         background: var(--amber-light, #fdf3df);
         color: #7a5200;
         border: 1px solid #f5d990;
@@ -444,19 +439,48 @@
         transition: all .15s;
         text-decoration: none;
         white-space: nowrap;
+        width: 30px;
+        height: 30px;
+    }
+
+    .btn-print:hover {
+        background: #fae9a0;
+        color: #7a5200;
+        text-decoration: none;
+    }
+
+    .btn-edit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 5px 10px;
+        background: var(--blue-bg, #eff6ff);
+        color: var(--blue, #2563eb);
+        border: 1px solid #b3d4fc;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all .15s;
+        text-decoration: none;
+        white-space: nowrap;
+        width: 30px;
+        height: 30px;
     }
 
     .btn-edit:hover {
-        background: #fae9a0;
-        color: #7a5200;
+        background: #d4e4ff;
+        color: #1a4f8f;
         text-decoration: none;
     }
 
     .btn-delete {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 5px 12px;
+        justify-content: center;
+        gap: 3px;
+        padding: 5px 10px;
         background: var(--red-bg, #fdecea);
         color: var(--red, #c0392b);
         border: 1px solid #f5c6c2;
@@ -466,6 +490,8 @@
         cursor: pointer;
         transition: all .15s;
         white-space: nowrap;
+        width: 30px;
+        height: 30px;
     }
 
     .btn-delete:hover {
@@ -503,6 +529,11 @@
         padding: 14px 20px;
         border-top: 1px solid var(--border, #ddd8d0);
         background: var(--surface, #f7f5f2);
+    }
+
+    .pagination-wrapper .pagination {
+        margin: 0;
+        justify-content: center;
     }
 
     /* Top Bar */
@@ -552,30 +583,9 @@
     }
 
     /* Responsive */
-    @media (max-width: 900px) {
+    @media (max-width: 1100px) {
         .stats-row {
             grid-template-columns: repeat(2, 1fr);
-        }
-
-        .data-table th:nth-child(1),
-        .data-table td:nth-child(1) {
-            width: 10%;
-        }
-        .data-table th:nth-child(2),
-        .data-table td:nth-child(2) {
-            width: 20%;
-        }
-        .data-table th:nth-child(3),
-        .data-table td:nth-child(3) {
-            width: 30%;
-        }
-        .data-table th:nth-child(4),
-        .data-table td:nth-child(4) {
-            width: 20%;
-        }
-        .data-table th:nth-child(5),
-        .data-table td:nth-child(5) {
-            width: 20%;
         }
     }
 
@@ -599,13 +609,17 @@
         }
 
         .action-buttons {
-            flex-direction: column;
-            align-items: stretch;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
+        .btn-print,
         .btn-edit,
         .btn-delete {
-            justify-content: center;
+            width: 28px;
+            height: 28px;
+            padding: 4px 6px;
+            font-size: 10px;
         }
 
         .data-table th,
@@ -614,18 +628,19 @@
             font-size: 12px;
         }
 
-        /* Remove fixed widths on mobile */
-        .data-table th:nth-child(1),
-        .data-table td:nth-child(1),
-        .data-table th:nth-child(2),
-        .data-table td:nth-child(2),
-        .data-table th:nth-child(3),
-        .data-table td:nth-child(3),
-        .data-table th:nth-child(4),
-        .data-table td:nth-child(4),
-        .data-table th:nth-child(5),
-        .data-table td:nth-child(5) {
-            width: auto;
+        .employee-photo {
+            width: 32px;
+            height: 32px;
+        }
+
+        .employee-code {
+            font-size: 10px;
+            padding: 2px 6px;
+        }
+
+        .category-badge {
+            font-size: 10px;
+            padding: 2px 8px;
         }
     }
 
@@ -642,26 +657,6 @@
         .data-table th,
         .data-table td {
             padding: 6px 8px;
-        }
-
-        .course-code {
-            font-size: 10px;
-            padding: 2px 8px;
-        }
-
-        .department-badge {
-            font-size: 10px;
-            padding: 2px 10px;
-        }
-
-        .btn-edit,
-        .btn-delete {
-            font-size: 10px;
-            padding: 4px 8px;
-        }
-
-        .stats-row {
-            grid-template-columns: 1fr;
         }
     }
 </style>

@@ -24,6 +24,8 @@
             --red-bg: #fdecea;
             --blue: #2563eb;
             --blue-bg: #eff6ff;
+            --purple: #7c3aed;
+            --purple-bg: #f3e8ff;
             --border: #ddd8d0;
             --border2: #ccc5b8;
             --radius: 10px;
@@ -262,7 +264,6 @@
 <body>
 
 <!-- ═══ Sidebar ═══ -->
- <!--sidebar updated-->
 <div class="sidebar">
     <div class="sidebar-logo">
         <div class="logo-icon"><i class="ti ti-school"></i></div>
@@ -280,12 +281,18 @@
     <a href="{{ url('/students') }}" class="nav-link {{ Request::is('students*') ? 'active' : '' }}">
         <i class="ti ti-users"></i> Students
     </a>
+    <a href="{{ url('/employees') }}" class="nav-link {{ Request::is('employees*') ? 'active' : '' }}">
+        <i class="ti ti-user-cog"></i> Employee Master
+    </a>
+    <a href="{{ url('/subjects') }}" class="nav-link {{ Request::is('subjects*') ? 'active' : '' }}">
+    <i class="ti ti-book"></i> Subject Master
+    </a>
     <a href="{{ url('/courses') }}" class="nav-link {{ Request::is('courses*') ? 'active' : '' }}">
         <i class="ti ti-book"></i> Courses
     </a>
     <a href="{{ url('/enrollments') }}" class="nav-link {{ Request::is('enrollments*') ? 'active' : '' }}">
-    <i class="ti ti-user-plus"></i> Enrollments
-</a>
+        <i class="ti ti-user-plus"></i> Enrollments
+    </a>
     
     <a href="{{ url('/faculty') }}" class="nav-link {{ Request::is('faculty*') ? 'active' : '' }}">
         <i class="ti ti-user-check"></i> Faculty

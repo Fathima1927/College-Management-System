@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Setting;  // <-- Add this import
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -115,6 +116,32 @@ class StudentController extends Controller
 
     public function print(Student $student)
     {
-        return view('students.print', compact('student'));
+        // Get settings from database
+        try {
+            $settings = Setting::first();
+            if (!$settings) {
+                $settings = (object) [
+                    'college_name' => 'CollegeOS',
+                    'college_logo' => null,
+                    'college_address' => 'Your College Address',
+                    'college_phone' => '123-456-7890',
+                    'college_email' => 'info@college.edu',
+                    'report_header' => null,
+                    'report_footer' => null,
+                ];
+            }
+        } catch (\Exception $e) {
+            $settings = (object) [
+                'college_name' => 'CollegeOS',
+                'college_logo' => null,
+                'college_address' => 'Your College Address',
+                'college_phone' => '123-456-7890',
+                'college_email' => 'info@college.edu',
+                'report_header' => null,
+                'report_footer' => null,
+            ];
+        }
+        
+        return view('students.print', compact('student', 'settings'));
     }
 }

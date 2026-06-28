@@ -1,67 +1,82 @@
 @extends('layouts.app')
 
-@section('title', 'Add Course - CollegeOS')
+@section('title', 'Add Subject - CollegeOS')
 
 @section('content')
 <div class="container-fluid">
     <!-- Top Bar -->
     <div class="topbar">
         <div>
-            <h1>Add New Course</h1>
-            <div class="topbar-sub">Create a new academic course</div>
+            <h1>Add New Subject</h1>
+            <div class="topbar-sub">Create a new academic subject</div>
         </div>
-        <a href="{{ route('courses.index') }}" class="btn-ghost">
-            <i class="ti ti-arrow-left"></i> Back to Courses
+        <a href="{{ route('subjects.index') }}" class="btn-ghost">
+            <i class="ti ti-arrow-left"></i> Back to Subjects
         </a>
     </div>
 
     <!-- Form Card -->
     <div class="form-card">
-        <form method="POST" action="{{ route('courses.store') }}">
+        <form method="POST" action="{{ route('subjects.store') }}">
             @csrf
 
             <div class="form-grid">
-                <!-- Course Code -->
+                <!-- Subject Code -->
                 <div class="field">
-                    <label for="course_code">Course Code <span class="required">*</span></label>
+                    <label for="subject_code">Subject Code <span class="required">*</span></label>
                     <input type="text" 
-                           id="course_code" 
-                           name="course_code" 
+                           id="subject_code" 
+                           name="subject_code" 
                            placeholder="e.g. CS101" 
-                           value="{{ old('course_code') }}"
+                           value="{{ old('subject_code') }}"
                            required>
-                    @error('course_code')
+                    @error('subject_code')
                         <span class="error">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <!-- Course Name -->
+                <!-- Subject Name -->
                 <div class="field">
-                    <label for="course_name">Course Name <span class="required">*</span></label>
+                    <label for="subject_name">Subject Name <span class="required">*</span></label>
                     <input type="text" 
-                           id="course_name" 
-                           name="course_name" 
-                           placeholder="e.g. BCA" 
-                           value="{{ old('course_name') }}"
+                           id="subject_name" 
+                           name="subject_name" 
+                           placeholder="e.g. Data Structures" 
+                           value="{{ old('subject_name') }}"
                            required>
-                    @error('course_name')
+                    @error('subject_name')
                         <span class="error">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <!-- Department Dropdown -->
+                <!-- Department -->
                 <div class="field">
                     <label for="department_id">Department <span class="required">*</span></label>
-                    <select name="department_id" id="department_id" required>
+                    <select id="department_id" name="department_id" required>
                         <option value="">Select Department</option>
-                        @foreach($departments as $dept)
-                            <option value="{{ $dept->id }}"
-                                {{ old('department_id') == $dept->id ? 'selected' : '' }}>
-                                {{ $dept->department_name }}
+                        @foreach($departments as $department)
+                            <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
+                                {{ $department->department_name }}
                             </option>
                         @endforeach
                     </select>
                     @error('department_id')
+                        <span class="error">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Course -->
+                <div class="field">
+                    <label for="course_id">Course <span class="required">*</span></label>
+                    <select id="course_id" name="course_id" required>
+                        <option value="">Select Course</option>
+                        @foreach($courses as $course)
+                            <option value="{{ $course->id }}" {{ old('course_id') == $course->id ? 'selected' : '' }}>
+                                {{ $course->course_name }} ({{ $course->course_code }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('course_id')
                         <span class="error">{{ $message }}</span>
                     @enderror
                 </div>
@@ -70,9 +85,9 @@
             <!-- Form Actions -->
             <div class="form-actions">
                 <button type="submit" class="btn-amber">
-                    <i class="ti ti-check"></i> Create Course
+                    <i class="ti ti-check"></i> Save Subject
                 </button>
-                <a href="{{ route('courses.index') }}" class="btn-ghost">
+                <a href="{{ route('subjects.index') }}" class="btn-ghost">
                     <i class="ti ti-x"></i> Cancel
                 </a>
             </div>
@@ -82,14 +97,13 @@
 
 <!-- Styles -->
 <style>
-    /* Form Card */
     .form-card {
         background: #fff;
         border: 1px solid var(--border, #ddd8d0);
         border-radius: var(--radius-lg, 16px);
         padding: 32px 36px;
         margin-top: 20px;
-        max-width: 750px;
+        max-width: 800px;
     }
 
     .form-grid {
@@ -201,12 +215,11 @@
         text-decoration: none;
     }
 
-    /* Top Bar */
     .topbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
         flex-wrap: wrap;
         gap: 12px;
     }
@@ -224,7 +237,6 @@
         margin-top: 2px;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
         .form-card {
             padding: 20px;
@@ -244,27 +256,6 @@
         .form-actions .btn-ghost {
             justify-content: center;
             width: 100%;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .form-card {
-            padding: 16px;
-        }
-
-        .topbar {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .topbar h1 {
-            font-size: 18px;
-        }
-
-        .field input,
-        .field select {
-            font-size: 13px;
-            padding: 8px 12px;
         }
     }
 </style>

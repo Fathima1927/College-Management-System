@@ -10,9 +10,14 @@
             <h1>Enrollment List</h1>
             <div class="topbar-sub">Student Course Mapping</div>
         </div>
-        <a href="{{ route('enrollments.create') }}" class="btn-amber">
-            <i class="ti ti-user-plus"></i> New Enrollment
-        </a>
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ route('enrollments.print') }}" target="_blank" class="btn-ghost">
+                <i class="ti ti-printer"></i> Print Report
+            </a>
+            <a href="{{ route('enrollments.create') }}" class="btn-amber">
+                <i class="ti ti-user-plus"></i> New Enrollment
+            </a>
+        </div>
     </div>
 
     <!-- Success Message -->
@@ -52,12 +57,6 @@
                     <i class="ti ti-search search-icon"></i>
                     <input type="text" id="searchInput" placeholder="Search enrollments..." onkeyup="searchTable()">
                 </div>
-                <button class="btn-ghost" onclick="window.print()">
-                    <i class="ti ti-printer"></i> Print
-                </button>
-                <a href="{{ route('enrollments.create') }}" class="btn-amber" style="padding: 7px 14px; font-size: 12px;">
-                    <i class="ti ti-user-plus"></i> Add
-                </a>
             </div>
         </div>
 
@@ -65,7 +64,7 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>SI NO</th>
                         <th>Student Name</th>
                         <th>Age</th>
                         <th>Gender</th>

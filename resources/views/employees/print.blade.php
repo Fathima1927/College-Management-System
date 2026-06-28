@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Details - {{ $settings->college_name ?? 'CollegeOS' }}</title>
+    <title>Employee Details - {{ $settings->college_name ?? 'CollegeOS' }}</title>
     <style>
         * {
             margin: 0;
@@ -67,75 +67,88 @@
             margin-top: 2px;
         }
 
-        /* Student Info Bar */
-        .student-info-bar {
+        /* Employee Info Bar */
+        .employee-info-bar {
             display: flex;
             align-items: center;
-            gap: 25px;
-            padding: 15px 20px;
+            gap: 30px;
+            padding: 20px 25px;
             background: #f7f5f2;
             border: 1px solid #ddd8d0;
             border-radius: 10px;
             margin-bottom: 20px;
         }
 
-        .student-photo {
+        .employee-photo {
             flex-shrink: 0;
         }
 
-        .student-photo img {
-            width: 80px;
-            height: 100px;
-            border-radius: 8px;
+        .employee-photo img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #c8850a;
+            border: 4px solid #c8850a;
         }
 
-        .student-info {
+        .employee-info {
             flex: 1;
         }
 
-        .student-info .student-name {
-            font-size: 22px;
+        .employee-info .employee-name {
+            font-size: 24px;
             font-weight: 700;
             color: #1a1a2e;
         }
 
-        .student-info .student-id {
+        .employee-info .employee-code {
             font-size: 14px;
             color: #555570;
             margin-top: 2px;
         }
 
-        .student-info .student-id strong {
+        .employee-info .employee-code strong {
             color: #1a1a2e;
         }
 
-        .student-info .student-meta {
+        .employee-info .employee-meta {
             display: flex;
             gap: 20px;
             margin-top: 5px;
             flex-wrap: wrap;
         }
 
-        .student-info .student-meta span {
+        .employee-info .employee-meta span {
             font-size: 13px;
             color: #555570;
         }
 
-        .student-info .student-meta strong {
+        .employee-info .employee-meta strong {
             color: #1a1a2e;
             font-weight: 600;
         }
 
-        .student-info .gender-badge {
+        .employee-info .category-badge {
             display: inline-block;
             padding: 2px 12px;
             border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
-            background: #f9f4e7;
-            color: #ab7b1f;
+        }
+
+        .category-badge.faculty {
+            background: #eaf5ef;
+            color: #1a7a4a;
+        }
+
+        .category-badge.staff {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .category-badge.non-teaching-staff {
+            background: #f3e8ff;
+            color: #7c3aed;
         }
 
         /* Details Table */
@@ -296,23 +309,23 @@
                 font-size: 18px;
             }
 
-            .student-info-bar {
-                padding: 12px 16px;
+            .employee-info-bar {
+                padding: 15px 20px;
                 background: #f7f5f2 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
 
-            .student-photo img {
-                width: 65px;
-                height: 85px;
-                border: 3px solid #c8850a !important;
+            .employee-photo img {
+                width: 100px;
+                height: 100px;
+                border: 4px solid #c8850a !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
 
-            .student-info .student-name {
-                font-size: 19px;
+            .employee-info .employee-name {
+                font-size: 20px;
             }
 
             .details-table td {
@@ -350,6 +363,24 @@
             .details-table tr {
                 border-bottom: 1px solid #ede8df;
             }
+
+            .category-badge.faculty {
+                background: #eaf5ef !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .category-badge.staff {
+                background: #eff6ff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .category-badge.non-teaching-staff {
+                background: #f3e8ff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
 
         /* Responsive */
@@ -358,14 +389,19 @@
                 padding: 15px;
             }
 
-            .student-info-bar {
+            .employee-info-bar {
                 flex-direction: column;
                 text-align: center;
                 padding: 15px;
             }
 
-            .student-info .student-meta {
+            .employee-info .employee-meta {
                 justify-content: center;
+            }
+
+            .employee-photo img {
+                width: 100px;
+                height: 100px;
             }
 
             .report-footer {
@@ -383,8 +419,8 @@
     <div class="report-container">
         <!-- Button Group (hidden when printing) -->
         <div class="btn-group no-print">
-            <a href="{{ route('students.index') }}" class="back-btn">
-                <i class="ti ti-arrow-left"></i> Back to Students
+            <a href="{{ route('employees.index') }}" class="back-btn">
+                <i class="ti ti-arrow-left"></i> Back to Employees
             </a>
             <button class="print-btn" onclick="window.print()">
                 <i class="ti ti-printer"></i> Print Details
@@ -416,22 +452,26 @@
                     | Email: {{ $settings->college_email }}
                 @endif
             </div>
-            <div class="report-title">Student Details Report</div>
+            <div class="report-title">Employee Details Report</div>
             <div class="report-date">Generated on: {{ now()->format('F d, Y h:i A') }}</div>
         </div>
 
-        <!-- Student Info Bar -->
-        <div class="student-info-bar">
-            <div class="student-photo">
-                <img src="{{ $student->photo ? asset('uploads/students/' . $student->photo) : 'https://via.placeholder.com/80x100?text=No+Photo' }}" alt="{{ $student->student_name }}">
+        <!-- Employee Info Bar -->
+        <div class="employee-info-bar">
+            <div class="employee-photo">
+                <img src="{{ $employee->photo_url }}" alt="{{ $employee->employee_name }}">
             </div>
-            <div class="student-info">
-                <div class="student-name">{{ $student->student_name }}</div>
-                <div class="student-id"><strong>Student ID:</strong> {{ $student->student_id }}</div>
-                <div class="student-meta">
-                    <span><strong>Father:</strong> {{ $student->father_name }}</span>
-                    <span><strong>Age:</strong> {{ $student->age }} years</span>
-                    <span><strong>Gender:</strong> <span class="gender-badge">{{ $student->gender }}</span></span>
+            <div class="employee-info">
+                <div class="employee-name">{{ $employee->employee_name }}</div>
+                <div class="employee-code"><strong>Employee Code:</strong> {{ $employee->employee_code }}</div>
+                <div class="employee-meta">
+                    <span><strong>Designation:</strong> {{ $employee->designation }}</span>
+                    <span>
+                        <strong>Category:</strong> 
+                        <span class="category-badge {{ strtolower(str_replace(' ', '-', $employee->category)) }}">
+                            {{ $employee->category }}
+                        </span>
+                    </span>
                 </div>
             </div>
         </div>
@@ -439,52 +479,32 @@
         <!-- Details Table -->
         <table class="details-table">
             <tr>
-                <td class="label-cell">Student ID</td>
-                <td class="value-cell">{{ $student->student_id }}</td>
+                <td class="label-cell">Employee Code</td>
+                <td class="value-cell">{{ $employee->employee_code }}</td>
             </tr>
             <tr>
-                <td class="label-cell">Student Name</td>
-                <td class="value-cell">{{ $student->student_name }}</td>
+                <td class="label-cell">Employee Name</td>
+                <td class="value-cell">{{ $employee->employee_name }}</td>
             </tr>
             <tr>
-                <td class="label-cell">Father's Name</td>
-                <td class="value-cell">{{ $student->father_name }}</td>
+                <td class="label-cell">Designation</td>
+                <td class="value-cell">{{ $employee->designation }}</td>
             </tr>
             <tr>
-                <td class="label-cell">Gender</td>
-                <td class="value-cell">{{ $student->gender }}</td>
+                <td class="label-cell">Category</td>
+                <td class="value-cell">{{ $employee->category }}</td>
             </tr>
             <tr>
-                <td class="label-cell">Age</td>
-                <td class="value-cell">{{ $student->age }} years</td>
+                <td class="label-cell">PF Number</td>
+                <td class="value-cell">{{ $employee->pf_no ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="label-cell">Date of Birth</td>
-                <td class="value-cell">{{ $student->date_of_birth->format('F d, Y') }}</td>
+                <td class="label-cell">ESI Number</td>
+                <td class="value-cell">{{ $employee->esi_no ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="label-cell">Contact Number</td>
-                <td class="value-cell">{{ $student->contact_number }}</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Alternate Contact</td>
-                <td class="value-cell">{{ $student->alternate_contact_number ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Aadhaar Number</td>
-                <td class="value-cell">{{ $student->aadhaar_number }}</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Last Class Studied</td>
-                <td class="value-cell">{{ $student->last_class_studied }}</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Previous Year Grade</td>
-                <td class="value-cell">{{ $student->previous_year_grade }}</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Last School Studied</td>
-                <td class="value-cell">{{ $student->last_school_studied }}</td>
+                <td class="label-cell">Address</td>
+                <td class="value-cell">{{ $employee->address ?? '-' }}</td>
             </tr>
         </table>
 

@@ -1,67 +1,115 @@
 @extends('layouts.app')
 
-@section('title', 'Add Course - CollegeOS')
+@section('title', 'Add Employee - CollegeOS')
 
 @section('content')
 <div class="container-fluid">
     <!-- Top Bar -->
     <div class="topbar">
         <div>
-            <h1>Add New Course</h1>
-            <div class="topbar-sub">Create a new academic course</div>
+            <h1>Add New Employee</h1>
+            <div class="topbar-sub">Create a new employee record</div>
         </div>
-        <a href="{{ route('courses.index') }}" class="btn-ghost">
-            <i class="ti ti-arrow-left"></i> Back to Courses
+        <a href="{{ route('employees.index') }}" class="btn-ghost">
+            <i class="ti ti-arrow-left"></i> Back to Employees
         </a>
     </div>
 
     <!-- Form Card -->
     <div class="form-card">
-        <form method="POST" action="{{ route('courses.store') }}">
+        <form method="POST" action="{{ route('employees.store') }}" enctype="multipart/form-data">
             @csrf
 
             <div class="form-grid">
-                <!-- Course Code -->
+                <!-- Employee Name -->
                 <div class="field">
-                    <label for="course_code">Course Code <span class="required">*</span></label>
+                    <label for="employee_name">Employee Name <span class="required">*</span></label>
                     <input type="text" 
-                           id="course_code" 
-                           name="course_code" 
-                           placeholder="e.g. CS101" 
-                           value="{{ old('course_code') }}"
+                           id="employee_name" 
+                           name="employee_name" 
+                           placeholder="e.g. John Doe" 
+                           value="{{ old('employee_name') }}"
                            required>
-                    @error('course_code')
+                    @error('employee_name')
                         <span class="error">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <!-- Course Name -->
+                <!-- Designation -->
                 <div class="field">
-                    <label for="course_name">Course Name <span class="required">*</span></label>
+                    <label for="designation">Designation <span class="required">*</span></label>
                     <input type="text" 
-                           id="course_name" 
-                           name="course_name" 
-                           placeholder="e.g. BCA" 
-                           value="{{ old('course_name') }}"
+                           id="designation" 
+                           name="designation" 
+                           placeholder="e.g. Professor" 
+                           value="{{ old('designation') }}"
                            required>
-                    @error('course_name')
+                    @error('designation')
                         <span class="error">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <!-- Department Dropdown -->
+                <!-- Category -->
                 <div class="field">
-                    <label for="department_id">Department <span class="required">*</span></label>
-                    <select name="department_id" id="department_id" required>
-                        <option value="">Select Department</option>
-                        @foreach($departments as $dept)
-                            <option value="{{ $dept->id }}"
-                                {{ old('department_id') == $dept->id ? 'selected' : '' }}>
-                                {{ $dept->department_name }}
-                            </option>
-                        @endforeach
+                    <label for="category">Category <span class="required">*</span></label>
+                    <select id="category" name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Faculty" {{ old('category') == 'Faculty' ? 'selected' : '' }}>Faculty</option>
+                        <option value="Staff" {{ old('category') == 'Staff' ? 'selected' : '' }}>Staff</option>
+                        <option value="Non-Teaching Staff" {{ old('category') == 'Non-Teaching Staff' ? 'selected' : '' }}>Non-Teaching Staff</option>
                     </select>
-                    @error('department_id')
+                    @error('category')
+                        <span class="error">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Photo -->
+                <div class="field">
+                    <label for="photo">Photo</label>
+                    <input type="file" 
+                           id="photo" 
+                           name="photo" 
+                           accept="image/*">
+                    <small style="color: var(--ink3, #555570); font-size: 12px;">Accepted formats: JPEG, PNG, JPG, GIF (Max: 2MB)</small>
+                    @error('photo')
+                        <span class="error">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Address -->
+                <div class="field full-width">
+                    <label for="address">Address</label>
+                    <textarea id="address" 
+                              name="address" 
+                              rows="3" 
+                              placeholder="Enter employee address...">{{ old('address') }}</textarea>
+                    @error('address')
+                        <span class="error">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- PF Number -->
+                <div class="field">
+                    <label for="pf_no">PF Number</label>
+                    <input type="text" 
+                           id="pf_no" 
+                           name="pf_no" 
+                           placeholder="e.g. PF123456" 
+                           value="{{ old('pf_no') }}">
+                    @error('pf_no')
+                        <span class="error">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- ESI Number -->
+                <div class="field">
+                    <label for="esi_no">ESI Number</label>
+                    <input type="text" 
+                           id="esi_no" 
+                           name="esi_no" 
+                           placeholder="e.g. ESI789012" 
+                           value="{{ old('esi_no') }}">
+                    @error('esi_no')
                         <span class="error">{{ $message }}</span>
                     @enderror
                 </div>
@@ -70,9 +118,9 @@
             <!-- Form Actions -->
             <div class="form-actions">
                 <button type="submit" class="btn-amber">
-                    <i class="ti ti-check"></i> Create Course
+                    <i class="ti ti-check"></i> Save Employee
                 </button>
-                <a href="{{ route('courses.index') }}" class="btn-ghost">
+                <a href="{{ route('employees.index') }}" class="btn-ghost">
                     <i class="ti ti-x"></i> Cancel
                 </a>
             </div>
@@ -82,14 +130,13 @@
 
 <!-- Styles -->
 <style>
-    /* Form Card */
     .form-card {
         background: #fff;
         border: 1px solid var(--border, #ddd8d0);
         border-radius: var(--radius-lg, 16px);
         padding: 32px 36px;
         margin-top: 20px;
-        max-width: 750px;
+        max-width: 800px;
     }
 
     .form-grid {
@@ -102,6 +149,10 @@
         display: flex;
         flex-direction: column;
         gap: 6px;
+    }
+
+    .field.full-width {
+        grid-column: span 2;
     }
 
     .field label {
@@ -117,7 +168,8 @@
     }
 
     .field input,
-    .field select {
+    .field select,
+    .field textarea {
         padding: 10px 14px;
         border: 1px solid var(--border2, #ccc5b8);
         border-radius: 8px;
@@ -128,18 +180,19 @@
         transition: all .2s;
         font-family: inherit;
         width: 100%;
-        appearance: auto;
     }
 
     .field input:focus,
-    .field select:focus {
+    .field select:focus,
+    .field textarea:focus {
         border-color: var(--amber, #c8850a);
         box-shadow: 0 0 0 3px rgba(200,133,10,.12);
         background: #fff;
     }
 
     .field input.error,
-    .field select.error {
+    .field select.error,
+    .field textarea.error {
         border-color: var(--red, #c0392b);
     }
 
@@ -147,6 +200,15 @@
         font-size: 12px;
         color: var(--red, #c0392b);
         margin-top: 4px;
+    }
+
+    .field textarea {
+        resize: vertical;
+    }
+
+    .field small {
+        font-size: 12px;
+        color: var(--ink3, #555570);
     }
 
     .form-actions {
@@ -201,12 +263,11 @@
         text-decoration: none;
     }
 
-    /* Top Bar */
     .topbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
         flex-wrap: wrap;
         gap: 12px;
     }
@@ -224,7 +285,6 @@
         margin-top: 2px;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
         .form-card {
             padding: 20px;
@@ -236,6 +296,10 @@
             gap: 16px;
         }
 
+        .field.full-width {
+            grid-column: span 1;
+        }
+
         .form-actions {
             flex-direction: column;
         }
@@ -244,27 +308,6 @@
         .form-actions .btn-ghost {
             justify-content: center;
             width: 100%;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .form-card {
-            padding: 16px;
-        }
-
-        .topbar {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .topbar h1 {
-            font-size: 18px;
-        }
-
-        .field input,
-        .field select {
-            font-size: 13px;
-            padding: 8px 12px;
         }
     }
 </style>
