@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Course Master - CollegeOS')
+@section('title', 'Fee Master - CollegeOS')
 
 @section('content')
 <div class="container-fluid">
     <!-- Top Bar -->
     <div class="topbar">
         <div>
-            <h1>Course Master</h1>
-            <div class="topbar-sub">Manage all academic courses</div>
+            <h1>Fee Master</h1>
+            <div class="topbar-sub">Manage fee structures and categories</div>
         </div>
-        <a href="{{ route('courses.create') }}" class="btn-amber">
-            <i class="ti ti-plus"></i> Add Course
+        <a href="{{ route('fee-masters.create') }}" class="btn-amber">
+            <i class="ti ti-plus"></i> Add Fee
         </a>
     </div>
 
@@ -25,36 +25,33 @@
     <!-- Stats Row -->
     <div class="stats-row">
         <div class="stat-card">
-            <div class="stat-label">📚 Total Courses</div>
-            <div class="stat-value">{{ $courses->count() }}</div>
-            <div class="stat-pill pill-amber"><i class="ti ti-book"></i> Active Courses</div>
+            <div class="stat-label">💰 Total Fee Records</div>
+            <div class="stat-value">{{ $fees->count() }}</div>
+            <div class="stat-pill pill-amber"><i class="ti ti-receipt"></i> Active Fees</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">📊 Last Updated</div>
-            <div class="stat-value" style="font-size: 24px;">{{ now()->format('M d, Y') }}</div>
-            <div class="stat-pill pill-green"><i class="ti ti-calendar"></i> {{ now()->format('h:i A') }}</div>
+            <div class="stat-label">💵 Total Amount</div>
+            <div class="stat-value" style="font-size: 24px;">₹ {{ number_format($fees->sum('amount'), 2) }}</div>
+            <div class="stat-pill pill-green"><i class="ti ti-currency-rupee"></i> Collected</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">🏷️ Total Departments</div>
-            <div class="stat-value">{{ $courses->pluck('department_id')->unique()->count() }}</div>
+            <div class="stat-label">🏷️ Departments Covered</div>
+            <div class="stat-value">{{ $fees->pluck('department')->unique()->count() }}</div>
             <div class="stat-pill pill-blue"><i class="ti ti-building"></i> Departments</div>
         </div>
     </div>
 
-    <!-- Course Table -->
+    <!-- Fee Table -->
     <div class="table-container">
         <div class="table-header">
             <div class="table-title">
-                <i class="ti ti-list"></i> Course List
+                <i class="ti ti-list"></i> Fee Records
             </div>
             <div class="table-actions">
                 <div class="search-wrap">
                     <i class="ti ti-search search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="Search courses..." onkeyup="searchTable()">
+                    <input type="text" id="searchInput" placeholder="Search fees..." onkeyup="searchTable()">
                 </div>
-                <button class="btn-ghost" onclick="window.print()">
-                    <i class="ti ti-printer"></i> Print
-                </button>
             </div>
         </div>
 
@@ -63,40 +60,46 @@
                 <thead>
                     <tr>
                         <th>SI No</th>
-                        <th>Course Code</th>
-                        <th>Course Name</th>
                         <th>Department</th>
+                        <th>Category</th>
+                        <th>Fee Name</th>
+                        <th>Amount</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($courses as $index => $course)
+                    @forelse($fees as $index => $fee)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>
-                                <span class="course-code">{{ $course->course_code }}</span>
-                            </td>
-                            <td>
-                                <span class="course-name">{{ $course->course_name }}</span>
-                            </td>
-                            <td>
                                 <span class="department-badge">
-                                    {{ $course->department->department_name ?? 'N/A' }}
+                                    {{ $fee->department }}
                                 </span>
                             </td>
                             <td>
+                                <span class="category-badge">
+                                    {{ $fee->category }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="fee-name">{{ $fee->fee_name }}</span>
+                            </td>
+                            <td>
+                                <span class="amount-badge">₹ {{ number_format($fee->amount, 2) }}</span>
+                            </td>
+                            <td>
                                 <div class="action-buttons">
-                                    <a href="{{ route('courses.edit', $course->id) }}" class="btn-edit">
+                                    <a href="{{ route('fee-masters.edit', $fee->id) }}" class="btn-edit">
                                         <i class="ti ti-edit"></i> Edit
                                     </a>
-                                    <form action="{{ route('courses.destroy', $course->id) }}"
+                                    <form action="{{ route('fee-masters.destroy', $fee->id) }}"
                                           method="POST"
                                           style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
                                                 class="btn-delete"
-                                                onclick="return confirm('Are you sure you want to delete this course?')">
+                                                onclick="return confirm('Are you sure you want to delete this fee record?')">
                                             <i class="ti ti-trash"></i> Delete
                                         </button>
                                     </form>
@@ -105,13 +108,13 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 <div class="empty-state">
-                                    <i class="ti ti-book"></i>
-                                    <div class="empty-title">No Courses Found</div>
-                                    <div class="empty-sub">Click "Add Course" to create your first course</div>
-                                    <a href="{{ route('courses.create') }}" class="btn-amber" style="margin-top: 15px; display: inline-flex;">
-                                        <i class="ti ti-plus"></i> Add Your First Course
+                                    <i class="ti ti-receipt"></i>
+                                    <div class="empty-title">No Fee Records Found</div>
+                                    <div class="empty-sub">Click "Add Fee" to create your first fee record</div>
+                                    <a href="{{ route('fee-masters.create') }}" class="btn-amber" style="margin-top: 15px; display: inline-flex;">
+                                        <i class="ti ti-plus"></i> Add Your First Fee
                                     </a>
                                 </div>
                             </td>
@@ -121,10 +124,10 @@
             </table>
         </div>
 
-        <!-- Pagination (if you have pagination) -->
-        @if(method_exists($courses, 'links'))
+        <!-- Pagination -->
+        @if(method_exists($fees, 'links'))
             <div class="pagination-wrapper">
-                {{ $courses->links() }}
+                {{ $fees->links() }}
             </div>
         @endif
     </div>
@@ -319,7 +322,7 @@
         text-decoration: none;
     }
 
-    /* Table - Equal spacing between all columns */
+    /* Table */
     .table-responsive {
         overflow-x: auto;
         padding: 0;
@@ -360,7 +363,7 @@
 
     .data-table th:nth-child(3),
     .data-table td:nth-child(3) {
-        width: 30%;
+        width: 18%;
     }
 
     .data-table th:nth-child(4),
@@ -370,7 +373,12 @@
 
     .data-table th:nth-child(5),
     .data-table td:nth-child(5) {
-        width: 22%;
+        width: 17%;
+    }
+
+    .data-table th:nth-child(6),
+    .data-table td:nth-child(6) {
+        width: 17%;
     }
 
     .data-table td {
@@ -392,26 +400,6 @@
         border-bottom: none;
     }
 
-    /* Course Code */
-    .course-code {
-        font-weight: 700;
-        color: var(--ink, #1a1a2e);
-        background: var(--amber-light, #fdf3df);
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-size: 12px;
-        display: inline-block;
-        white-space: nowrap;
-    }
-
-    .course-name {
-        font-weight: 500;
-        color: var(--ink, #1a1a2e);
-        display: block;
-        word-wrap: break-word;
-        font-size: 13px;
-    }
-
     /* Department Badge */
     .department-badge {
         background: var(--blue-bg, #eff6ff);
@@ -422,7 +410,40 @@
         display: inline-block;
         font-weight: 500;
         white-space: nowrap;
-}
+    }
+
+    /* Category Badge */
+    .category-badge {
+        background: var(--gray-bg, #f0f0f0);
+        color: var(--ink2, #2d2d4e);
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        display: inline-block;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    /* Fee Name */
+    .fee-name {
+        font-weight: 500;
+        color: var(--ink, #1a1a2e);
+        display: block;
+        word-wrap: break-word;
+        font-size: 13px;
+    }
+
+    /* Amount Badge */
+    .amount-badge {
+        font-weight: 700;
+        color: #1a7a4a;
+        background: var(--green-bg, #eaf5ef);
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        display: inline-block;
+        white-space: nowrap;
+    }
 
     /* Action Buttons */
     .action-buttons {
@@ -566,19 +587,23 @@
         }
         .data-table th:nth-child(2),
         .data-table td:nth-child(2) {
-            width: 20%;
+            width: 18%;
         }
         .data-table th:nth-child(3),
         .data-table td:nth-child(3) {
-            width: 28%;
+            width: 18%;
         }
         .data-table th:nth-child(4),
         .data-table td:nth-child(4) {
-            width: 20%;
+            width: 22%;
         }
         .data-table th:nth-child(5),
         .data-table td:nth-child(5) {
-            width: 22%;
+            width: 17%;
+        }
+        .data-table th:nth-child(6),
+        .data-table td:nth-child(6) {
+            width: 15%;
         }
     }
 
@@ -627,7 +652,9 @@
         .data-table th:nth-child(4),
         .data-table td:nth-child(4),
         .data-table th:nth-child(5),
-        .data-table td:nth-child(5) {
+        .data-table td:nth-child(5),
+        .data-table th:nth-child(6),
+        .data-table td:nth-child(6) {
             width: auto;
         }
     }
@@ -647,14 +674,15 @@
             padding: 6px 8px;
         }
 
-        .course-code {
-            font-size: 10px;
-            padding: 2px 8px;
-        }
-
-        .department-badge {
+        .department-badge,
+        .category-badge {
             font-size: 10px;
             padding: 2px 10px;
+        }
+
+        .amount-badge {
+            font-size: 10px;
+            padding: 2px 8px;
         }
 
         .btn-edit,

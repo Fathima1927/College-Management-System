@@ -41,7 +41,7 @@
                     <input type="text" 
                            id="course_name" 
                            name="course_name" 
-                           placeholder="e.g. BCA" 
+                           placeholder="e.g. Introduction to Programming" 
                            value="{{ old('course_name') }}"
                            required>
                     @error('course_name')
