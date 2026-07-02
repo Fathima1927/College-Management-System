@@ -9,46 +9,49 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // --- Step 1: add the new columns we need, nullable for now -----
-        Schema::table('fee_payments', function (Blueprint $table) {
-            $table->foreignId('fee_master_id')
-                ->nullable()
-                ->after('student_id')
-                ->constrained('fee_masters')
-                ->nullOnDelete();
+        // --- Step 1: add the new column, only if it doesn't already exist ---
+        if (!Schema::hasColumn('fee_payments', 'fee_master_id')) {
+            Schema::table('fee_payments', function (Blueprint $table) {
+                $table->foreignId('fee_master_id')
+                    ->nullable()
+                    ->after('student_id')
+                    ->constrained('fee_masters')
+                    ->nullOnDelete();
+            });
+        }
 
-            
-        });
+        // --- Step 2: best-effort backfill of fee_master_id from fee_name ---
+        // Only run this if fee_name still exists (it gets dropped in step 4)
+        if (Schema::hasColumn('fee_payments', 'fee_name')) {
+            $rows = DB::table('fee_payments')->select('id', 'fee_name')->get();
 
-        // --- Step 2: best-effort backfill of fee_master_id from fee_name
-        // existing rows store fee_name as free text; match it to fee_masters
-        // by name so we don't orphan historical payments. Anything that
-        // doesn't match is left null and should be reviewed manually.
-        $rows = DB::table('fee_payments')->select('id', 'fee_name')->get();
+            foreach ($rows as $row) {
+                $match = DB::table('fee_masters')
+                    ->where('fee_name', $row->fee_name)
+                    ->first();
 
-        foreach ($rows as $row) {
-            $match = DB::table('fee_masters')
-                ->where('fee_name', $row->fee_name)
-                ->first();
-
-            if ($match) {
-                DB::table('fee_payments')
-                    ->where('id', $row->id)
-                    ->update(['fee_master_id' => $match->id]);
+                if ($match) {
+                    DB::table('fee_payments')
+                        ->where('id', $row->id)
+                        ->update(['fee_master_id' => $match->id]);
+                }
             }
         }
 
-        // --- Step 3: rename amount -> amount_paid (this is now ONE
-        // installment's amount, not the full fee) ----------------------
-        Schema::table('fee_payments', function (Blueprint $table) {
-            $table->renameColumn('amount', 'amount_paid');
-        });
+        // --- Step 3: rename amount -> amount_paid, only if not already done ---
+        if (Schema::hasColumn('fee_payments', 'amount') && !Schema::hasColumn('fee_payments', 'amount_paid')) {
+            Schema::table('fee_payments', function (Blueprint $table) {
+                $table->renameColumn('amount', 'amount_paid');
+            });
+        }
 
-        // --- Step 4: drop columns we no longer store. status/paid/balance
-        // are now always computed from fee_masters.amount minus the sum
-        // of amount_paid for a student+fee_master_id. ---------------------
+        // --- Step 4: drop columns we no longer store, only if they still exist ---
         Schema::table('fee_payments', function (Blueprint $table) {
-            $table->dropColumn(['status', 'student_name', 'fee_name']);
+            foreach (['status', 'student_name', 'fee_name'] as $col) {
+                if (Schema::hasColumn('fee_payments', $col)) {
+                    $table->dropColumn($col);
+                }
+            }
         });
     }
 
@@ -66,7 +69,7 @@ return new class extends Migration
 
         Schema::table('fee_payments', function (Blueprint $table) {
             $table->dropForeign(['fee_master_id']);
-            $table->dropColumn(['fee_master_id', 'remarks']);
+            $table->dropColumn(['fee_master_id']);
         });
     }
 };
